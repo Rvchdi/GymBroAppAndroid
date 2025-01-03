@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="240dp"
+    android:viewportWidth="240"
+    android:viewportHeight="240">
+
+    <!-- Main dumbbell bar -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M70,110h100v20h-100z"/>
+
+    <!-- Left weights -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M20,90h40v60h-40zM40,80h20v80h-20z"/>
+
+    <!-- Right weights -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M180,90h40v60h-40zM180,80h20v80h-20z"/>
+
+</vector>

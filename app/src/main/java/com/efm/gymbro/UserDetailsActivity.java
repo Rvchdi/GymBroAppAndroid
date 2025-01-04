@@ -1,7 +1,9 @@
 package com.efm.gymbro;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,17 +62,17 @@ public class UserDetailsActivity extends AppCompatActivity {
         String weight = weightEditText.getText().toString().trim();
         String frequency = workoutFrequencySpinner.getSelectedItem().toString();
 
-        // Get selected body type
+        //body type
         String bodyType = "";
-        if (findViewById(R.id.ectomorphRadio).isSelected()) bodyType = "Ectomorph";
-        else if (findViewById(R.id.mesomorphRadio).isSelected()) bodyType = "Mesomorph";
-        else if (findViewById(R.id.endomorphRadio).isSelected()) bodyType = "Endomorph";
+        if (((RadioButton)findViewById(R.id.ectomorphRadio)).isChecked()) bodyType = "Ectomorph";
+        else if (((RadioButton)findViewById(R.id.mesomorphRadio)).isChecked()) bodyType = "Mesomorph";
+        else if (((RadioButton)findViewById(R.id.endomorphRadio)).isChecked()) bodyType = "Endomorph";
 
-        // Get selected goal
-        String goal = "";
-        if (findViewById(R.id.loseWeightRadio).isSelected()) goal = "Lose Weight";
-        else if (findViewById(R.id.buildMuscleRadio).isSelected()) goal = "Build Muscle";
-        else if (findViewById(R.id.stayFitRadio).isSelected()) goal = "Stay Fit";
+        //goal
+        String goal ="";
+        if (((RadioButton)findViewById(R.id.loseWeightRadio)).isChecked()) goal = "Lose Weight";
+        else if (((RadioButton)findViewById(R.id.buildMuscleRadio)).isChecked()) goal = "Build Muscle";
+        else if (((RadioButton)findViewById(R.id.stayFitRadio)).isChecked()) goal = "Stay Fit";
 
         // Validation
         if (age.isEmpty() || weight.isEmpty() || bodyType.isEmpty() ||
@@ -95,6 +97,10 @@ public class UserDetailsActivity extends AppCompatActivity {
                     Toast.makeText(UserDetailsActivity.this,
                             "Profile saved successfully!",
                             Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(UserDetailsActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> {

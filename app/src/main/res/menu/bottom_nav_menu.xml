@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_programs"
+        android:icon="@drawable/ic_programs"
+        android:title="Programs" />
+
+    <item
+        android:id="@+id/navigation_nutrients"
+        android:icon="@drawable/ic_nutrients"
+        android:title="Nutrients" />
+
+    <item
+        android:id="@+id/navigation_user"
+        android:icon="@drawable/ic_user"
+        android:title="User" />
+</menu>

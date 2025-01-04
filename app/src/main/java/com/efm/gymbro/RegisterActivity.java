@@ -58,44 +58,16 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void handleRegistration() {
-        String name = nameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
-        String password = passwordEditText.getText().toString();
-        String confirmPassword = confirmPasswordEditText.getText().toString();
+        String password = passwordEditText.getText().toString().trim();
+        String name = nameEditText.getText().toString().trim();
 
-        // Validate inputs
-        if (name.isEmpty()) {
-            nameEditText.setError("Name is required");
-            return;
-        }
-        if (email.isEmpty()) {
-            emailEditText.setError("Email is required");
-            return;
-        }
-        if (password.isEmpty()) {
-            passwordEditText.setError("Password is required");
-            return;
-        }
-        if (!password.equals(confirmPassword)) {
-            confirmPasswordEditText.setError("Passwords don't match");
-            return;
-        }
-
-        // Show progress
-        registerButton.setEnabled(false);
-        // TODO: Show progress indicator
-
-        // Create user with Firebase
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Save additional user info
                         FirebaseUser user = mAuth.getCurrentUser();
                         saveUserInfo(user, name);
-                        Intent intent = new Intent(RegisterActivity.this, UserDetailsActivity.class);
-                        startActivity(intent);
                     } else {
-                        // Handle failure
                         Toast.makeText(RegisterActivity.this,
                                 "Registration failed: " + task.getException().getMessage(),
                                 Toast.LENGTH_LONG).show();
@@ -114,8 +86,9 @@ public class RegisterActivity extends AppCompatActivity {
         db.collection("users").document(user.getUid())
                 .set(userInfo)
                 .addOnSuccessListener(aVoid -> {
-                    // Navigate to main activity
-                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                    Intent intent = new Intent(RegisterActivity.this, UserDetailsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> {

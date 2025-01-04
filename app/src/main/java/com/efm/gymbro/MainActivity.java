@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -12,10 +14,17 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private FirebaseAuth mAuth;
     private TextInputEditText emailEditText, passwordEditText;
     private MaterialButton loginButton, registerButton;
     private TextView forgotPasswordText;
@@ -32,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         registerButton = findViewById(R.id.registerButton);
         forgotPasswordText = findViewById(R.id.forgotPasswordText);
+        mAuth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
         // Set click listeners
         loginButton.setOnClickListener(v -> handleLogin());
@@ -46,14 +56,29 @@ public class MainActivity extends AppCompatActivity {
     private void handleLogin() {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-        // Implement Firebase login logic
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(MainActivity.this,
+                                "Authentication failed: " + task.getException().getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
+
     private void handleRegister() {
-        // Navigate to registration screen or handle registration logic
+
     }
 
     private void handleForgotPassword() {
-        // Handle forgot password logic
+
     }
 }

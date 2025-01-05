@@ -2,8 +2,8 @@ package com.efm.gymbro.model;
 
 import java.util.List;
 
-
 public class Exercise {
+    private String id;
     private String name;
     private String type;
     private String level;
@@ -17,8 +17,9 @@ public class Exercise {
     // Empty constructor for Firebase
     public Exercise() {}
 
-    public Exercise(String name, String type, String level, List<String> targetMuscles,
+    public Exercise(String id, String name, String type, String level, List<String> targetMuscles,
                     String category, List<String> equipment, int sets, String reps) {
+        this.id = id;
         this.name = name;
         this.type = type;
         this.level = level;
@@ -31,6 +32,9 @@ public class Exercise {
     }
 
     // Getters and setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
@@ -57,4 +61,17 @@ public class Exercise {
 
     public boolean isSelected() { return isSelected; }
     public void setSelected(boolean selected) { isSelected = selected; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Exercise exercise = (Exercise) o;
+        return id != null && id.equals(exercise.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

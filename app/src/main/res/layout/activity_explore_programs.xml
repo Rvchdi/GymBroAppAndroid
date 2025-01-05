@@ -7,22 +7,25 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:liftOnScroll="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorSurface"
             app:title="Explore Programs"
-            app:navigationIcon="@drawable/ic_back"
-            app:menu="@menu/explore_programs_menu"/>
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:menu="@menu/explore_programs_menu"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -36,13 +39,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="12dp">
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutline"
+                app:cardCornerRadius="16dp">
 
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/searchView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:iconifiedByDefault="false"
                     android:queryHint="Search programs"/>
 
@@ -53,60 +58,111 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="4dp"
                 android:scrollbars="none">
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/filterChipGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:singleSelection="false">
+                    app:singleSelection="false"
+                    app:chipSpacingHorizontal="8dp">
 
                     <com.google.android.material.chip.Chip
+                        android:id="@+id/chipStrength"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Strength"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"/>
+                        style="@style/Widget.Material3.Chip.Filter"/>
 
                     <com.google.android.material.chip.Chip
+                        android:id="@+id/chipCardio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Cardio"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"/>
+                        style="@style/Widget.Material3.Chip.Filter"/>
 
                     <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFlexibility"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Flexibility"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"/>
+                        style="@style/Widget.Material3.Chip.Filter"/>
 
                     <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBeginner"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Beginner"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"/>
+                        style="@style/Widget.Material3.Chip.Filter"/>
 
                     <com.google.android.material.chip.Chip
+                        android:id="@+id/chipIntermediate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Intermediate"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"/>
+                        style="@style/Widget.Material3.Chip.Filter"/>
 
                     <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAdvanced"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Advanced"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"/>
+                        style="@style/Widget.Material3.Chip.Filter"/>
 
                 </com.google.android.material.chip.ChipGroup>
 
             </HorizontalScrollView>
 
+            <!-- Muscle Visualization -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Targeted Muscles"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.efm.gymbro.MuscleVisualizationView
+                        android:id="@+id/muscleVisualization"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/muscleChipGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="8dp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Programs Grid -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/programsRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"/>
 
         </LinearLayout>
 

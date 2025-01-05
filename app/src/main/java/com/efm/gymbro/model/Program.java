@@ -1,30 +1,20 @@
 package com.efm.gymbro.model;
+import com.efm.gymbro.model.Exercise;
+import com.google.firebase.firestore.DocumentId;
 
-
-import com.google.firebase.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-
 public class Program {
+    @DocumentId
     private String id;
     private String name;
     private List<Exercise> exercises;
     private String userId;
-    private String description;
-    private String difficulty;
-    private Timestamp createdAt;
-    private int durationMinutes;
-    private String category;
+    private Date createdAt;
 
-    public Program() {} //
-
-    public Program(String name, List<Exercise> exercises, String userId) {
-        this.name = name;
-        this.exercises = exercises;
-        this.userId = userId;
-        this.createdAt = new Timestamp(new Date().getTime()/1000, 0);
-    }
+    // Required empty constructor for Firestore
+    public Program() {}
 
     // Getters and setters
     public String getId() { return id; }
@@ -39,18 +29,6 @@ public class Program {
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getDifficulty() { return difficulty; }
-    public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
-
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
-
-    public int getDurationMinutes() { return durationMinutes; }
-    public void setDurationMinutes(int durationMinutes) { this.durationMinutes = durationMinutes; }
-
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 }

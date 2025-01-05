@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.efm.gymbro.model.Program;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,7 +38,11 @@ public class ProgramsFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUserPrograms();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_programs, container, false);
@@ -63,26 +68,89 @@ public class ProgramsFragment extends Fragment {
 
     private void setupRecyclerViews() {
         myProgramsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        programAdapter = new ProgramAdapter();
+        programAdapter = new ProgramAdapter(
+                program -> navigateToProgramDetails(program),
+                program -> confirmAndDeleteProgram(program)
+        );
         myProgramsRecyclerView.setAdapter(programAdapter);
         loadUserPrograms();
     }
 
     private void loadUserPrograms() {
+        Log.d("Programs", "Loading programs for user: " + currentUserId);
         db.collection("programs")
                 .whereEqualTo("userId", currentUserId)
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     List<Program> programs = new ArrayList<>();
+                    Log.d("Programs", "Found " + snapshot.size() + " programs");
+
                     for(DocumentSnapshot doc : snapshot.getDocuments()) {
-                        Program program = doc.toObject(Program.class);
-                        if(program != null) {
-                            programs.add(program);
+                        try {
+                            Program program = doc.toObject(Program.class);
+                            if(program != null) {
+                                program.setId(doc.getId());
+                                programs.add(program);
+                                Log.d("Programs", "Added program: " + program.getName());
+                            }
+                        } catch (Exception e) {
+                            Log.e("Programs", "Error converting document: " + doc.getId(), e);
                         }
                     }
+
+                    if (programs.isEmpty()) {
+                        Log.d("Programs", "No programs found");
+                        // Optional: Show empty state
+                        showEmptyState(true);
+                    } else {
+                        showEmptyState(false);
+                    }
+
                     programAdapter.setPrograms(programs);
+                    programAdapter.notifyDataSetChanged(); // Force refresh
                 })
-                .addOnFailureListener(e -> Log.e("Programs", "Error: ", e));
+                .addOnFailureListener(e -> {
+                    Log.e("Programs", "Error loading programs: ", e);
+                    showError("Failed to load programs");
+                });
+    }
+
+    private void showEmptyState(boolean show) {
+        // Add a TextView in your layout for empty state
+        View emptyView = getView().findViewById(R.id.emptyStateView);
+        if (emptyView != null) {
+            emptyView.setVisibility(show ? View.VISIBLE : View.GONE);
+            myProgramsRecyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private void navigateToProgramDetails(Program program) {
+        Intent intent = new Intent(getContext(), ProgramDetailsActivity.class);
+        intent.putExtra("program_id", program.getId());
+        startActivity(intent);
+    }
+
+    private void confirmAndDeleteProgram(Program program) {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete Program")
+                .setMessage("Are you sure you want to delete this program?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteProgram(program))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void deleteProgram(Program program) {
+        db.collection("programs")
+                .document(program.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    programAdapter.removeProgram(program);
+                    showSuccess("Program deleted successfully");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Programs", "Error deleting program: ", e);
+                    showError("Failed to delete program");
+                });
     }
 
     private void navigateToCreateProgram() {
@@ -91,5 +159,13 @@ public class ProgramsFragment extends Fragment {
 
     private void navigateToExplorePrograms() {
         startActivity(new Intent(getActivity(), ExploreProgramsActivity.class));
+    }
+
+    private void showError(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showSuccess(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -103,12 +103,20 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/myProgramsRecyclerView"
+            <!-- Program Card Layout (This will be used in your RecyclerView adapter) -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:nestedScrollingEnabled="false"/>
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/myProgramsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:nestedScrollingEnabled="false"/>
+
+            </LinearLayout>
 
             <!-- Featured Programs Section -->
             <TextView
@@ -127,7 +135,14 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
+    <TextView
+        android:id="@+id/emptyStateView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No programs found\nCreate one by tapping the + button"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:padding="16dp"/>
     <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/createProgramFab"

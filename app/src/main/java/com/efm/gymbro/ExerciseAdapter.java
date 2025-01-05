@@ -7,16 +7,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import com.efm.gymbro.model.Exercise;
 import com.google.android.material.card.MaterialCardView;
 import java.util.List;
+import java.util.Set;
+
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHolder> {
     private List<Exercise> exercises;
     private OnExerciseClickListener listener;
+    private Set<Exercise> selectedExercises = new HashSet<>();  // Add this
 
     public interface OnExerciseClickListener {
-        void onExerciseClick(Exercise exercise);
+        void onExerciseClick(Exercise exercise, boolean isSelected);  // Update interface
     }
 
     public ExerciseAdapter(List<Exercise> exercises, OnExerciseClickListener listener) {
@@ -41,16 +47,29 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         holder.detailsText.setText(String.format("%s • %s • %dx%s",
                 exercise.getType(), exercise.getLevel(), exercise.getSets(), exercise.getReps()));
 
-        holder.card.setOnClickListener(v -> {
-            exercise.setSelected(!exercise.isSelected());
-            holder.checkBox.setChecked(exercise.isSelected());
-            listener.onExerciseClick(exercise);
-        });
+        View.OnClickListener clickListener = v -> {
+            boolean newState = !exercise.isSelected();
+            exercise.setSelected(newState);
+            holder.checkBox.setChecked(newState);
+            if (newState) {
+                selectedExercises.add(exercise);
+            } else {
+                selectedExercises.remove(exercise);
+            }
+            listener.onExerciseClick(exercise, newState);
+        };
+
+        holder.card.setOnClickListener(clickListener);
+        holder.checkBox.setOnClickListener(clickListener);
     }
 
     @Override
     public int getItemCount() {
         return exercises.size();
+    }
+
+    public List<Exercise> getSelectedExercises() {
+        return new ArrayList<>(selectedExercises);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

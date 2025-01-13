@@ -25,8 +25,8 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (itemId == R.id.navigation_programs) {
                     selectedFragment = new ProgramsFragment();
-                } else if (itemId == R.id.navigation_nutrients) {
-                    selectedFragment = new NutrientsFragment();
+                } else if (itemId == R.id.navigation_session) {
+                    selectedFragment = new SessionFragment();
                 } else if (itemId == R.id.navigation_user) {
                     selectedFragment = new UserFragment();
                 }

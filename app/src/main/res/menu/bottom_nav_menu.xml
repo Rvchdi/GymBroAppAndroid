@@ -6,9 +6,9 @@
         android:title="Programs" />
 
     <item
-        android:id="@+id/navigation_nutrients"
-        android:icon="@drawable/ic_nutrients"
-        android:title="Nutrients" />
+        android:id="@+id/navigation_session"
+        android:icon="@drawable/ic_session"
+        android:title="Session" />
 
     <item
         android:id="@+id/navigation_user"

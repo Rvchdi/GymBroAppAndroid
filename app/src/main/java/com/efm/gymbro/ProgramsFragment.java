@@ -2,170 +2,227 @@ package com.efm.gymbro;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.efm.gymbro.model.Program;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramsFragment extends Fragment {
+    private View rootView;
+    private View emptyStateView;
     private RecyclerView myProgramsRecyclerView;
     private RecyclerView featuredProgramsRecyclerView;
-    private ProgramAdapter programAdapter;
-    private FirebaseFirestore db;
-    private String currentUserId;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private ExtendedFloatingActionButton createProgramFab;
     private MaterialCardView createProgramCard;
     private MaterialCardView exploreProgramsCard;
-    private ExtendedFloatingActionButton createProgramFab;
+    private ProgramAdapter programAdapter;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_programs, container, false);
+        return rootView;
+    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Initialize Firebase
         db = FirebaseFirestore.getInstance();
-        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
+        mAuth = FirebaseAuth.getInstance();
+
+        // Initialize views
+        initializeViews();
+        setupRecyclerViews();
+        setupSwipeRefresh();
+        setupClickListeners();
+
+        // Load initial data
         loadUserPrograms();
     }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_programs, container, false);
-        initializeViews(view);
-        setupClickListeners();
-        setupRecyclerViews();
-        return view;
-    }
 
-    private void initializeViews(View view) {
-        myProgramsRecyclerView = view.findViewById(R.id.myProgramsRecyclerView);
-        featuredProgramsRecyclerView = view.findViewById(R.id.featuredProgramsRecyclerView);
-        createProgramCard = view.findViewById(R.id.createProgramCard);
-        exploreProgramsCard = view.findViewById(R.id.exploreProgramsCard);
-        createProgramFab = view.findViewById(R.id.createProgramFab);
-    }
-
-    private void setupClickListeners() {
-        createProgramCard.setOnClickListener(v -> navigateToCreateProgram());
-        exploreProgramsCard.setOnClickListener(v -> navigateToExplorePrograms());
-        createProgramFab.setOnClickListener(v -> navigateToCreateProgram());
+    private void initializeViews() {
+        emptyStateView = rootView.findViewById(R.id.emptyStateView);
+        myProgramsRecyclerView = rootView.findViewById(R.id.myProgramsRecyclerView);
+        featuredProgramsRecyclerView = rootView.findViewById(R.id.featuredProgramsRecyclerView);
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
+        createProgramFab = rootView.findViewById(R.id.addProgramFab);
+        createProgramCard = rootView.findViewById(R.id.createProgramCard);
+        exploreProgramsCard = rootView.findViewById(R.id.exploreProgramsCard);
     }
 
     private void setupRecyclerViews() {
-        myProgramsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         programAdapter = new ProgramAdapter(
-                program -> navigateToProgramDetails(program),
-                program -> confirmAndDeleteProgram(program)
+                // Display listener
+                this::showProgramDetails,
+                // Delete listener
+                this::deleteProgram,
+                // Start program listener
+                this::startProgram
         );
+        myProgramsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         myProgramsRecyclerView.setAdapter(programAdapter);
-        loadUserPrograms();
+
+        // Set up Featured Programs RecyclerView with horizontal layout
+        LinearLayoutManager featuredLayoutManager = new LinearLayoutManager(requireContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        featuredProgramsRecyclerView.setLayoutManager(featuredLayoutManager);
+        // TODO: Set up featured programs adapter
+    }
+
+    private void startProgram(Program program) {
+        // Create new instance of SessionFragment using the factory method
+        SessionFragment sessionFragment = SessionFragment.newInstance(program);
+
+        // Replace current fragment with SessionFragment
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, sessionFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void setupSwipeRefresh() {
+        swipeRefreshLayout.setOnRefreshListener(this::loadUserPrograms);
+    }
+
+    private void setupClickListeners() {
+        createProgramFab.setOnClickListener(v -> navigateToCreateProgram());
+        createProgramCard.setOnClickListener(v -> navigateToCreateProgram());
+        exploreProgramsCard.setOnClickListener(v -> navigateToExplorePrograms());
+    }
+
+    private void navigateToCreateProgram() {
+        startActivity(new Intent(requireContext(), CreateProgramActivity.class));
+    }
+
+    private void navigateToExplorePrograms() {
+        // TODO: Implement navigation to explore programs
+        showError("Explore Programs feature coming soon!");
     }
 
     private void loadUserPrograms() {
-        Log.d("Programs", "Loading programs for user: " + currentUserId);
-        db.collection("programs")
-                .whereEqualTo("userId", currentUserId)
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    List<Program> programs = new ArrayList<>();
-                    Log.d("Programs", "Found " + snapshot.size() + " programs");
+        if (!isAdded()) return;
 
-                    for(DocumentSnapshot doc : snapshot.getDocuments()) {
-                        try {
-                            Program program = doc.toObject(Program.class);
-                            if(program != null) {
-                                program.setId(doc.getId());
-                                programs.add(program);
-                                Log.d("Programs", "Added program: " + program.getName());
-                            }
-                        } catch (Exception e) {
-                            Log.e("Programs", "Error converting document: " + doc.getId(), e);
+        String userId = mAuth.getCurrentUser().getUid();
+        swipeRefreshLayout.setRefreshing(true);
+
+        db.collection("programs")
+                .whereEqualTo("creatorId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!isAdded()) return;
+
+                    List<Program> programs = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        Program program = document.toObject(Program.class);
+                        if (program != null) {
+                            program.setId(document.getId());
+                            programs.add(program);
                         }
                     }
-
-                    if (programs.isEmpty()) {
-                        Log.d("Programs", "No programs found");
-                        // Optional: Show empty state
-                        showEmptyState(true);
-                    } else {
-                        showEmptyState(false);
-                    }
-
-                    programAdapter.setPrograms(programs);
-                    programAdapter.notifyDataSetChanged(); // Force refresh
+                    updateUI(programs);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("Programs", "Error loading programs: ", e);
-                    showError("Failed to load programs");
+                    if (!isAdded()) return;
+
+                    swipeRefreshLayout.setRefreshing(false);
+                    showError("Error loading programs: " + e.getMessage());
                 });
     }
 
-    private void showEmptyState(boolean show) {
-        // Add a TextView in your layout for empty state
-        View emptyView = getView().findViewById(R.id.emptyStateView);
-        if (emptyView != null) {
-            emptyView.setVisibility(show ? View.VISIBLE : View.GONE);
-            myProgramsRecyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-
-    private void navigateToProgramDetails(Program program) {
-        Intent intent = new Intent(getContext(), ProgramDetailsActivity.class);
-        intent.putExtra("program_id", program.getId());
-        startActivity(intent);
-    }
-
-    private void confirmAndDeleteProgram(Program program) {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Delete Program")
-                .setMessage("Are you sure you want to delete this program?")
-                .setPositiveButton("Delete", (dialog, which) -> deleteProgram(program))
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
     private void deleteProgram(Program program) {
+        if (program.getId() == null) return;
+
         db.collection("programs")
                 .document(program.getId())
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     programAdapter.removeProgram(program);
-                    showSuccess("Program deleted successfully");
+                    showError("Program deleted successfully");
+                    if (programAdapter.getItemCount() == 0) {
+                        showEmptyState();
+                    }
                 })
-                .addOnFailureListener(e -> {
-                    Log.e("Programs", "Error deleting program: ", e);
-                    showError("Failed to delete program");
-                });
+                .addOnFailureListener(e -> showError("Error deleting program: " + e.getMessage()));
     }
 
-    private void navigateToCreateProgram() {
-        startActivity(new Intent(getContext(), CreateProgramActivity.class));
+    private void updateUI(List<Program> programs) {
+        swipeRefreshLayout.setRefreshing(false);
+
+        if (programs.isEmpty()) {
+            showEmptyState();
+        } else {
+            hideEmptyState();
+            programAdapter.updatePrograms(programs);
+        }
     }
 
-    private void navigateToExplorePrograms() {
-        startActivity(new Intent(getActivity(), ExploreProgramsActivity.class));
+    private void showEmptyState() {
+        if (emptyStateView != null && myProgramsRecyclerView != null) {
+            emptyStateView.setVisibility(View.VISIBLE);
+            myProgramsRecyclerView.setVisibility(View.GONE);
+        }
+    }
+
+    private void hideEmptyState() {
+        if (emptyStateView != null && myProgramsRecyclerView != null) {
+            emptyStateView.setVisibility(View.GONE);
+            myProgramsRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showError(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        if (getContext() != null) {
+            Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+        }
     }
 
-    private void showSuccess(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    private void showProgramDetails(Program program) {
+        // TODO: Navigate to program details
+        Intent intent = new Intent(requireContext(), ProgramDetailsActivity.class);
+        intent.putExtra("program_id", program.getId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUserPrograms(); // Refresh programs when returning to fragment
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Clear references to views
+        rootView = null;
+        emptyStateView = null;
+        myProgramsRecyclerView = null;
+        featuredProgramsRecyclerView = null;
+        swipeRefreshLayout = null;
+        createProgramFab = null;
+        createProgramCard = null;
+        exploreProgramsCard = null;
+        programAdapter = null;
     }
 }

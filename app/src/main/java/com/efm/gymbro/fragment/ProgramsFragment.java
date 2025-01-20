@@ -1,4 +1,4 @@
-package com.efm.gymbro;
+package com.efm.gymbro.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.efm.gymbro.activity.CreateProgramActivity;
+import com.efm.gymbro.adapter.ProgramAdapter;
+import com.efm.gymbro.activity.ProgramDetailsActivity;
+import com.efm.gymbro.R;
 import com.efm.gymbro.model.Program;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;

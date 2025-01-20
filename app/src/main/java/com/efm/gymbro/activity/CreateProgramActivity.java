@@ -1,6 +1,11 @@
-package com.efm.gymbro;
+package com.efm.gymbro.activity;
 
 import androidx.appcompat.widget.Toolbar;
+
+import com.efm.gymbro.R;
+import com.efm.gymbro.adapter.ExerciseAdapter;
+import com.efm.gymbro.fragment.AddExerciseDialogFragment;
+import com.efm.gymbro.fragment.ExerciseDetailsDialogFragment;
 import com.efm.gymbro.model.Exercise;
 import com.efm.gymbro.model.Program;
 import com.google.android.material.textfield.TextInputEditText;

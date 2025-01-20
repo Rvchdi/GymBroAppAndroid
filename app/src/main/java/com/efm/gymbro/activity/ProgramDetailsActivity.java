@@ -1,4 +1,4 @@
-package com.efm.gymbro;
+package com.efm.gymbro.activity;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +12,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.efm.gymbro.R;
+import com.efm.gymbro.adapter.ProgramExerciseAdapter;
 import com.efm.gymbro.model.Exercise;
 import com.efm.gymbro.model.Program;
 import com.google.firebase.firestore.FirebaseFirestore;

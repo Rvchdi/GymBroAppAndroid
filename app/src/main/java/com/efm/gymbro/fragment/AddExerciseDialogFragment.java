@@ -1,4 +1,4 @@
-package com.efm.gymbro;
+package com.efm.gymbro.fragment;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
+import com.efm.gymbro.adapter.ExerciseAdapter;
+import com.efm.gymbro.R;
 import com.efm.gymbro.model.Exercise;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;

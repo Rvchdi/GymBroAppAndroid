@@ -1,11 +1,10 @@
-package com.efm.gymbro;
+package com.efm.gymbro.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.efm.gymbro.activity.ProgramDetailsActivity;
+import com.efm.gymbro.R;
+import com.efm.gymbro.activity.UserDetailsActivity;
 import com.efm.gymbro.model.Program;
 import com.efm.gymbro.model.Session;
 import com.google.android.material.button.MaterialButton;

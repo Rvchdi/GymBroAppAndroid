@@ -1,4 +1,4 @@
-package com.efm.gymbro;
+package com.efm.gymbro.activity;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,7 +6,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+
+import com.efm.gymbro.R;
+import com.efm.gymbro.fragment.ProgramsFragment;
+import com.efm.gymbro.fragment.SessionFragment;
+import com.efm.gymbro.fragment.UserFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {

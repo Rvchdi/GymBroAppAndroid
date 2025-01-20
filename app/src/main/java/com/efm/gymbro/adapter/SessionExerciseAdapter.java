@@ -1,4 +1,4 @@
-package com.efm.gymbro;
+package com.efm.gymbro.adapter;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,9 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.efm.gymbro.R;
 import com.efm.gymbro.model.Exercise;
 import com.efm.gymbro.model.Session.ExerciseSet;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;

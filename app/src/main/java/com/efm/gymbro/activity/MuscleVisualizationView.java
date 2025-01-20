@@ -1,4 +1,4 @@
-package com.efm.gymbro;
+package com.efm.gymbro.activity;
 
 import android.content.Context;
 import android.graphics.Canvas;

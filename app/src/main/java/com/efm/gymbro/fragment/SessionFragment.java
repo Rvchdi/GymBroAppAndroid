@@ -1,4 +1,4 @@
-package com.efm.gymbro;
+package com.efm.gymbro.fragment;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.efm.gymbro.R;
+import com.efm.gymbro.adapter.SessionExerciseAdapter;
 import com.efm.gymbro.model.Exercise;
 import com.efm.gymbro.model.Program;
 import com.efm.gymbro.model.Session;

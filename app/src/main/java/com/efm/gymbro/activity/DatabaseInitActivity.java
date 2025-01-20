@@ -1,8 +1,10 @@
-package com.efm.gymbro;
+package com.efm.gymbro.activity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.efm.gymbro.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;

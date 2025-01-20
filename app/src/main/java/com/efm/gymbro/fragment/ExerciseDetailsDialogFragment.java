@@ -1,15 +1,16 @@
-package com.efm.gymbro;
+package com.efm.gymbro.fragment;
 
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.app.Dialog;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+
+import com.efm.gymbro.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.efm.gymbro.model.Exercise;
 
